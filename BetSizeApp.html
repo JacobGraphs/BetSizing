@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPR Geometric Bet Sizing Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styles for the range slider thumb */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #4f46e5; /* indigo-600 */
+            cursor: pointer;
+            border-radius: 50%;
+            margin-top: -6px; /* Center thumb vertically */
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #4f46e5;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        
+        /* Custom styles for the range slider track */
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #e5e7eb; /* gray-200 */
+            border-radius: 5px;
+        }
+
+        input[type="range"]::-moz-range-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #e5e7eb;
+            border-radius: 5px;
+        }
+        
+        .card {
+            @apply bg-white rounded-2xl shadow-lg p-6 md:p-8 flex flex-col;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <!-- Main calculator container with a 2x2 grid layout for large screens -->
+    <div class="w-full max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
+        
+        <!-- Geometric Bet Calculator Card -->
+        <div class="card space-y-6">
+            <div class="text-center">
+                <h1 class="text-2xl font-bold text-gray-800">Geometric Bet Calculator</h1>
+                <p class="text-sm text-gray-500 mt-1">Adjust the SPR to see optimal bet sizes.</p>
+            </div>
+            <div class="space-y-4">
+                <div class="flex justify-between items-baseline">
+                    <label for="spr-slider" class="text-lg font-semibold text-gray-700">SPR</label>
+                    <span id="spr-value" class="text-2xl font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">8.5</span>
+                </div>
+                <input type="range" id="spr-slider" min="1" max="20" value="8.5" step="0.1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+            </div>
+            <div class="bg-gray-50 rounded-xl p-5 space-y-4">
+                <h2 class="text-md font-semibold text-gray-600 text-center mb-2">Calculated Bet Sizes (% of Pot)</h2>
+                <div class="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm">
+                    <p class="font-semibold text-gray-700">2e Line (Two Streets)</p>
+                    <div id="2e-output" class="text-xl font-bold text-green-600">106.1%</div>
+                </div>
+                <div class="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm">
+                     <p class="font-semibold text-gray-700">3e Line (Three Streets)</p>
+                    <div id="3e-output" class="text-xl font-bold text-blue-600">81.0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Range Estimator Card -->
+        <div class="card space-y-4 justify-center">
+             <div class="text-center">
+                 <h1 class="text-xl font-bold text-gray-800">Range Estimator</h1>
+                 <p class="text-sm text-gray-500 mt-1">Estimate total combos in a preflop range.</p>
+            </div>
+            <div class="space-y-2">
+                <label for="preflop-range-input" class="text-sm font-medium text-gray-600">Preflop Range (%)</label>
+                <input type="number" id="preflop-range-input" value="20" min="0" max="100" class="w-full p-2 border border-gray-300 rounded-lg text-center text-lg font-semibold text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div class="text-center bg-gray-50 p-4 rounded-lg">
+                <p class="text-md font-semibold text-gray-600">Total Starting Combos</p>
+                <p class="text-2xl font-bold text-indigo-600"><span id="preflop-combos-output">265.2</span> / 1326</p>
+            </div>
+        </div>
+
+        <!-- Value Combo Calculator Card -->
+        <div class="card space-y-4">
+            <div class="text-center">
+                 <h1 class="text-xl font-bold text-gray-800">Value Combo Calculator</h1>
+                 <p class="text-sm text-gray-500 mt-1">Break down a specific final street value range.</p>
+            </div>
+            <div class="grow grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-4">
+                <div class="space-y-1">
+                    <label for="one-pair-input" class="text-xs font-medium text-gray-500">One Pair</label>
+                    <input type="number" id="one-pair-input" value="0" min="0" class="combo-input w-full p-2 border border-gray-300 rounded-lg text-center font-semibold text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="space-y-1">
+                    <label for="two-pair-input" class="text-xs font-medium text-gray-500">Two Pair</label>
+                    <input type="number" id="two-pair-input" value="6" min="0" class="combo-input w-full p-2 border border-gray-300 rounded-lg text-center font-semibold text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="space-y-1">
+                    <label for="sets-input" class="text-xs font-medium text-gray-500">Sets</label>
+                    <input type="number" id="sets-input" value="3" min="0" class="combo-input w-full p-2 border border-gray-300 rounded-lg text-center font-semibold text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="space-y-1">
+                    <label for="straights-input" class="text-xs font-medium text-gray-500">Straights</label>
+                    <input type="number" id="straights-input" value="0" min="0" class="combo-input w-full p-2 border border-gray-300 rounded-lg text-center font-semibold text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="space-y-1">
+                    <label for="flushes-input" class="text-xs font-medium text-gray-500">Flushes</label>
+                    <input type="number" id="flushes-input" value="3" min="0" class="combo-input w-full p-2 border border-gray-300 rounded-lg text-center font-semibold text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="space-y-1">
+                    <label for="boats-input" class="text-xs font-medium text-gray-500">Boats+</label>
+                    <input type="number" id="boats-input" value="0" min="0" class="combo-input w-full p-2 border border-gray-300 rounded-lg text-center font-semibold text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+            <div class="text-center bg-gray-50 p-3 rounded-lg">
+                <p class="text-md font-semibold text-gray-600">Total Value Combos: <span id="total-value-combos" class="font-bold text-gray-800 text-lg">12</span></p>
+            </div>
+        </div>
+
+        <!-- EV and Indifference Calculator Card -->
+        <div class="card space-y-4">
+             <div class="text-center">
+                 <h1 class="text-xl font-bold text-gray-800">Bluff & EV Calculator</h1>
+                 <p class="text-sm text-gray-500 mt-1">Calculate indifference and profitability.</p>
+            </div>
+            <div class="space-y-2">
+                 <label for="actual-bluffs-slider" class="text-sm font-medium text-gray-600">Actual Bluff Combos: <span id="actual-bluffs-value" class="font-bold">10</span></label>
+                 <input type="range" id="actual-bluffs-slider" value="10" min="0" max="253" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+            </div>
+            <div class="space-y-2">
+                <label for="custom-bet-size-input" class="text-sm font-medium text-gray-600">Custom Bet Size (%)</label>
+                <input type="number" id="custom-bet-size-input" value="75" min="1" class="w-full p-2 border border-gray-300 rounded-lg text-center text-lg font-semibold text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <!-- Required Bluffs Section -->
+            <div class="bg-gray-50 rounded-xl p-4 space-y-3">
+                <h2 class="text-md font-semibold text-gray-600 text-center">Required Bluffs for Indifference</h2>
+                 <div class="flex items-center justify-between text-sm">
+                    <p class="font-medium text-gray-600">vs. 2e Line</p>
+                    <div id="bluff-combos-2e-output" class="font-bold text-red-500">5.8 <span class="text-xs text-gray-400 font-normal">(17.8)</span></div>
+                </div>
+                 <div class="flex items-center justify-between text-sm">
+                    <p class="font-medium text-gray-600">vs. 3e Line</p>
+                    <div id="bluff-combos-3e-output" class="font-bold text-red-500">6.6 <span class="text-xs text-gray-400 font-normal">(18.6)</span></div>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                    <p class="font-medium text-gray-600">vs. 1e Line (Shove)</p>
+                    <div id="bluff-combos-1e-output" class="font-bold text-purple-500">10.1 <span class="text-xs text-gray-400 font-normal">(22.1)</span></div>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                    <p class="font-medium text-indigo-600">vs. Custom Bet</p>
+                    <div id="bluff-combos-custom-output" class="font-bold text-indigo-600">5.1 <span class="text-xs text-gray-400 font-normal">(17.1)</span></div>
+                </div>
+            </div>
+            <!-- EV Section -->
+            <div class="bg-gray-50 rounded-xl p-4 space-y-3">
+                <h2 class="text-md font-semibold text-gray-600 text-center">EV of Calling Bet</h2>
+                 <div class="flex items-center justify-between text-sm">
+                    <div>
+                        <p class="font-medium text-gray-600">vs. 2e Line</p>
+                        <p id="summary-2e" class="text-xs text-gray-500">Bet: 106.1%</p>
+                    </div>
+                    <div id="ev-2e-output" class="ev-output text-xl font-bold text-green-600">+0.00</div>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                     <div>
+                        <p class="font-medium text-gray-600">vs. 3e Line</p>
+                        <p id="summary-3e" class="text-xs text-gray-500">Bet: 81.0%</p>
+                    </div>
+                    <div id="ev-3e-output" class="ev-output text-xl font-bold text-red-500">+0.00</div>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                    <div>
+                        <p class="font-medium text-gray-600">vs. 1e Line (Shove)</p>
+                        <p id="summary-1e" class="text-xs text-gray-500">SPR: 8.5</p>
+                    </div>
+                    <div id="ev-1e-output" class="ev-output text-xl font-bold text-red-500">-0.00</div>
+                </div>
+                 <div class="flex items-center justify-between text-sm">
+                    <div>
+                        <p class="font-medium text-indigo-600">vs. Custom Bet</p>
+                        <p id="summary-custom" class="text-xs text-gray-500">Bet: 75.0%</p>
+                    </div>
+                    <div id="ev-custom-output" class="ev-output text-xl font-bold text-green-600">+0.00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Element Selection ---
+        const sprSlider = document.getElementById('spr-slider');
+        const sprValueDisplay = document.getElementById('spr-value');
+        const output2eDisplay = document.getElementById('2e-output');
+        const output3eDisplay = document.getElementById('3e-output');
+        const comboInputs = document.querySelectorAll('.combo-input');
+        const totalValueCombosDisplay = document.getElementById('total-value-combos');
+        const bluffCombos2eOutput = document.getElementById('bluff-combos-2e-output');
+        const bluffCombos3eOutput = document.getElementById('bluff-combos-3e-output');
+        const bluffCombos1eOutput = document.getElementById('bluff-combos-1e-output');
+        const bluffCombosCustomOutput = document.getElementById('bluff-combos-custom-output');
+        const customBetSizeInput = document.getElementById('custom-bet-size-input');
+        const actualBluffsSlider = document.getElementById('actual-bluffs-slider');
+        const actualBluffsValue = document.getElementById('actual-bluffs-value');
+        
+        // EV Outputs
+        const ev2eOutput = document.getElementById('ev-2e-output');
+        const ev3eOutput = document.getElementById('ev-3e-output');
+        const ev1eOutput = document.getElementById('ev-1e-output');
+        const evCustomOutput = document.getElementById('ev-custom-output');
+        
+        // Summary Spans
+        const summary1e = document.getElementById('summary-1e');
+        const summary2e = document.getElementById('summary-2e');
+        const summary3e = document.getElementById('summary-3e');
+        const summaryCustom = document.getElementById('summary-custom');
+
+        // Range Estimator
+        const preflopRangeInput = document.getElementById('preflop-range-input');
+        const preflopCombosOutput = document.getElementById('preflop-combos-output');
+
+
+        // --- Global State ---
+        const TOTAL_HAND_COMBOS = 1326;
+        let currentBetSize2eFraction = 0;
+        let currentBetSize3eFraction = 0;
+        let totalValueCombos = 0;
+        let startingCombos = 0;
+
+        // --- Calculation Functions ---
+
+        function calculateGeometricSizes() {
+            const spr = parseFloat(sprSlider.value);
+            sprValueDisplay.textContent = spr.toFixed(1);
+
+            const betSize2e = ((Math.pow(1 + 2 * spr, 1 / 2) - 1) / 2) * 100;
+            currentBetSize2eFraction = betSize2e / 100;
+            
+            const betSize3e = ((Math.pow(1 + 2 * spr, 1 / 3) - 1) / 2) * 100;
+            currentBetSize3eFraction = betSize3e / 100;
+
+            output2eDisplay.textContent = `${betSize2e.toFixed(1)}%`;
+            output3eDisplay.textContent = `${betSize3e.toFixed(1)}%`;
+            
+            summary1e.textContent = `SPR: ${spr.toFixed(1)}`;
+            summary2e.textContent = `Bet: ${betSize2e.toFixed(1)}%`;
+            summary3e.textContent = `Bet: ${betSize3e.toFixed(1)}%`;
+        }
+        
+        function updateTotalValueCombos() {
+            totalValueCombos = 0;
+            comboInputs.forEach(input => {
+                totalValueCombos += parseFloat(input.value) || 0;
+            });
+            totalValueCombosDisplay.textContent = totalValueCombos;
+        }
+
+        function updateBluffSlider() {
+            const maxBluffs = Math.max(0, startingCombos - totalValueCombos);
+            actualBluffsSlider.max = maxBluffs.toFixed(0);
+            if (parseFloat(actualBluffsSlider.value) > maxBluffs) {
+                actualBluffsSlider.value = maxBluffs.toFixed(0);
+            }
+            actualBluffsValue.textContent = actualBluffsSlider.value;
+        }
+
+        function calculateStartingRange() {
+            const preflopPercent = (parseFloat(preflopRangeInput.value) || 0) / 100;
+            startingCombos = TOTAL_HAND_COMBOS * preflopPercent;
+            preflopCombosOutput.textContent = startingCombos.toFixed(1);
+        }
+
+        function calculateRequiredBluffs() {
+            const spr = parseFloat(sprSlider.value);
+            const customBetFraction = (parseFloat(customBetSizeInput.value) || 0) / 100;
+            
+            const requiredBluffs1e = totalValueCombos * (spr / (1 + spr));
+            const requiredBluffs2e = totalValueCombos * (currentBetSize2eFraction / (1 + currentBetSize2eFraction));
+            const requiredBluffs3e = totalValueCombos * (currentBetSize3eFraction / (1 + currentBetSize3eFraction));
+            const requiredBluffsCustom = totalValueCombos * (customBetFraction / (1 + customBetFraction));
+
+            bluffCombos1eOutput.innerHTML = `${requiredBluffs1e.toFixed(1)} <span class="text-xs text-gray-400 font-normal">(${(totalValueCombos + requiredBluffs1e).toFixed(1)})</span>`;
+            bluffCombos2eOutput.innerHTML = `${requiredBluffs2e.toFixed(1)} <span class="text-xs text-gray-400 font-normal">(${(totalValueCombos + requiredBluffs2e).toFixed(1)})</span>`;
+            bluffCombos3eOutput.innerHTML = `${requiredBluffs3e.toFixed(1)} <span class="text-xs text-gray-400 font-normal">(${(totalValueCombos + requiredBluffs3e).toFixed(1)})</span>`;
+            bluffCombosCustomOutput.innerHTML = `${requiredBluffsCustom.toFixed(1)} <span class="text-xs text-gray-400 font-normal">(${(totalValueCombos + requiredBluffsCustom).toFixed(1)})</span>`;
+        }
+
+        function calculateEVOfCalling() {
+            const actualBluffs = parseFloat(actualBluffsSlider.value) || 0;
+            actualBluffsValue.textContent = actualBluffs;
+            const spr = parseFloat(sprSlider.value);
+            const customBetSize = parseFloat(customBetSizeInput.value) || 0
+            const customBetFraction = customBetSize / 100;
+            summaryCustom.textContent = `Bet: ${customBetSize.toFixed(1)}%`;
+
+            calculateAndDisplayEV(ev1eOutput, actualBluffs, spr);
+            calculateAndDisplayEV(ev2eOutput, actualBluffs, currentBetSize2eFraction);
+            calculateAndDisplayEV(ev3eOutput, actualBluffs, currentBetSize3eFraction);
+            calculateAndDisplayEV(evCustomOutput, actualBluffs, customBetFraction);
+        }
+
+        function calculateAndDisplayEV(element, actualBluffs, betSizeFraction) {
+            const totalBettingCombos = totalValueCombos + actualBluffs;
+            
+            if (totalBettingCombos === 0) {
+                updateEVDisplay(element, 0);
+                return;
+            }
+
+            const percentBluff = actualBluffs / totalBettingCombos;
+            
+            const ev = (percentBluff * (1 + betSizeFraction)) - ((1 - percentBluff) * betSizeFraction);
+            updateEVDisplay(element, ev);
+        }
+
+        function updateEVDisplay(element, evValue) {
+            if (!isFinite(evValue)) {
+                 element.textContent = 'N/A';
+                 element.className = 'ev-output text-xl font-bold text-gray-500';
+                 return;
+            }
+            element.textContent = (evValue >= 0 ? '+' : '') + evValue.toFixed(2);
+            element.classList.toggle('text-green-600', evValue >= 0);
+            element.classList.toggle('text-red-500', evValue < 0);
+        }
+        
+        function runAllCalculations() {
+            calculateGeometricSizes();
+            updateTotalValueCombos();
+            calculateStartingRange();
+            updateBluffSlider();
+            calculateRequiredBluffs();
+            calculateEVOfCalling();
+        }
+
+        // --- Event Listeners ---
+        sprSlider.addEventListener('input', runAllCalculations);
+        comboInputs.forEach(input => {
+            input.addEventListener('input', runAllCalculations);
+        });
+        customBetSizeInput.addEventListener('input', runAllCalculations);
+        preflopRangeInput.addEventListener('input', runAllCalculations);
+        actualBluffsSlider.addEventListener('input', runAllCalculations);
+
+        // --- Initial Call ---
+        window.onload = runAllCalculations;
+
+    </script>
+</body>
+</html>
