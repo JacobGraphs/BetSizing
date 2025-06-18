@@ -54,15 +54,15 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
 
     <!-- Main calculator container with a 2x2 grid layout for large screens -->
-    <div class="w-full max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
+    <main class="w-full max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
         
         <!-- Geometric Bet Calculator Card -->
         <div class="card space-y-6">
             <div class="text-center">
-                <h1 class="text-2xl font-bold text-gray-800">Geometric Bet Calculator</h1>
+                <h1 class="text-2xl font-bold text-gray-800">Corgi's Geometric Bet Calculator</h1>
                 <p class="text-sm text-gray-500 mt-1">Adjust the SPR to see optimal bet sizes.</p>
             </div>
             <div class="space-y-4">
@@ -205,7 +205,13 @@
                 </div>
             </div>
         </div>
-    </div>
+    </main>
+    <footer class="text-center py-8">
+        <a href="https://venmo.com/jteacorgi?txn=pay" class="inline-flex items-center text-gray-500 hover:text-indigo-600 transition-colors" target="_blank" rel="noopener">
+            <img src="https://cdn.simpleicons.org/venmo/3D95CE" alt="Venmo logo" class="w-6 h-6 mr-2">
+            <span>Consider Supporting</span>
+        </a>
+    </footer>
 
     <script>
         // --- DOM Element Selection ---
